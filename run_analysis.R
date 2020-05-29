@@ -40,12 +40,12 @@ y_test <-
 
 #apply column names to training data
 names(X_train) <- features$X1
-names(y_train) <- "activitynum"
+names(y_train) <- "activity"
 names(s_train) <- "subject"
 
 #apply column names to testing data
 names(X_test) <- features$X1
-names(y_test) <- "activitynum"
+names(y_test) <- "activity"
 names(s_test) <- "subject"
 
 #combine  training data into a dataframe
@@ -63,19 +63,25 @@ rm(s_train,
 
 #define columns wanted
 filter <- grep("-mean..$|-std..$", features$X1, value = TRUE)
-full <- full[, c("subject", filter, "activitynum")] %>%
-        left_join(activitylabel, by = c("activitynum" = "X1")) %>%
-        rename(activity = X2) %>%
-        select(-activitynum)
+full <- full[, c("subject", filter, "activity")] %>%
+        mutate(activity = factor(activity, levels = activitylabel$X1, labels = activitylabel$X2))
 rm(activitylabel, features, filter)
 
 ##reformat variable names
 names(full)[2:19] <- names(full)[2:19] %>%
         str_replace("^(\\d)*\\s", "") %>%
         str_replace(".{2}$", "") %>%
-        str_replace_all("Body|Mag", "") %>%
-        str_replace("(.*)-(mean)", "\\2\\1") %>%
-        str_replace("(.*)-(std)", "\\2\\1")
+        str_replace("^t", "Time") %>%
+        str_replace("^f", "Frequency") %>%
+        str_replace("AccJerk", "LinearJerk") %>%
+        str_replace("GyroJerk", "AngularJerk") %>%
+        str_replace("Acc", "LinearAcceleration") %>%
+        str_replace("Gyro", "AngularVelocity") %>%
+        str_replace("Mag", "") %>%
+        str_replace("BodyBody", "Body") %>%
+        str_replace("-(m)", "M") %>%
+        str_replace("-(s)", "S")
+        
 
 ##Summarise Full
 means <- group_by(full, activity,subject) %>%
