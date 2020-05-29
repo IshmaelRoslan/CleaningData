@@ -1,20 +1,42 @@
+#Load tidyverse libraries
 library(tidyverse)
 
+#Get Data and Cleanup Environment
+url <-
+        "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+zip <- "UCI HAR Dataset.zip"
+dir <- "UCI HAR Dataset"
+if (!file.exists(zip)) {
+        download.file(url, zip)
+}
+if (!file.exists(dir)) {
+        unzip(zip)
+}
+rm(dir, url, zip)
+
 #read label data
-features <- read_table("features.txt", col_names = F)
-activitylabel <- read_table("activity_labels.txt", col_names = F)
+features <-
+        read_table("./UCI HAR Dataset/features.txt", col_names = F)
+activitylabel <-
+        read_table("./UCI HAR Dataset/activity_labels.txt", col_names = F)
 activitylabel[, 2] <-
         c("walk", "upstairs", "downstairs", "sit", "stand", "lie")
 
 #read training data
-s_train <- read_table("./train/subject_train.txt", col_names = F)
-X_train <- read_table("./train/X_train.txt", col_names = F)
-y_train <- read_table("./train/y_train.txt", col_names = F)
+s_train <-
+        read_table("./UCI HAR Dataset/train/subject_train.txt", col_names = F)
+X_train <-
+        read_table("./UCI HAR Dataset/train/X_train.txt", col_names = F)
+y_train <-
+        read_table("./UCI HAR Dataset/train/y_train.txt", col_names = F)
 
 #read testing data
-s_test <- read_table("./test/subject_test.txt", col_names = F)
-X_test <- read_table("./test/X_test.txt", col_names = F)
-y_test <- read_table("./test/y_test.txt", col_names = F)
+s_test <-
+        read_table("./UCI HAR Dataset/test/subject_test.txt", col_names = F)
+X_test <-
+        read_table("./UCI HAR Dataset/test/X_test.txt", col_names = F)
+y_test <-
+        read_table("./UCI HAR Dataset/test/y_test.txt", col_names = F)
 
 #apply column names to training data
 names(X_train) <- features$X1
@@ -56,8 +78,8 @@ names(full)[2:19] <- names(full)[2:19] %>%
         str_replace("(.*)-(std)", "\\2\\1")
 
 ##Summarise Full
-tbl_df(full)
-means <- group_by(full, subject, activity) %>%
+means <- group_by(full, activity,subject) %>%
         summarise_all(mean)
 
-
+#Output data as text file
+write.table(means, file = "tidydata.txt",row.names = F)
