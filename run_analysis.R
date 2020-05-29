@@ -88,7 +88,7 @@ means <- group_by(full, activity,subject) %>%
         summarise_all(mean)
 
 #Output data as text file
-write.table(means, file = "tidydata.txt",row.names = F)
+write.table(means, file = "tidydata.txt",row.names = F,col.names = T)
 
 #Optionally remove any extraneous data not in the tidy dataset.
 unlink("UCI HAR Dataset",recursive = T)
