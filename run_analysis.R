@@ -71,9 +71,9 @@ rm(activitylabel, features, filter)
 
 ##reformat variable names
 names(full)[2:19] <- names(full)[2:19] %>%
-        str_replace('^(\\d)*\\s', '') %>%
-        str_replace('.{2}$', '') %>%
-        str_replace_all('Body|Mag', '') %>%
+        str_replace("^(\\d)*\\s", "") %>%
+        str_replace(".{2}$", "") %>%
+        str_replace_all("Body|Mag", "") %>%
         str_replace("(.*)-(mean)", "\\2\\1") %>%
         str_replace("(.*)-(std)", "\\2\\1")
 
@@ -83,3 +83,7 @@ means <- group_by(full, activity,subject) %>%
 
 #Output data as text file
 write.table(means, file = "tidydata.txt",row.names = F)
+
+#Optionally remove any extraneous data not in the tidy dataset.
+unlink("UCI HAR Dataset",recursive = T)
+unlink("UCI HAR Dataset.zip")
