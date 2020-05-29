@@ -45,7 +45,7 @@ full <- full[, c("subject", filter, "activitynum")] %>%
         left_join(activitylabel, by = c("activitynum" = "X1")) %>%
         rename(activity = X2) %>%
         select(-activitynum)
-rm(activitylabel, features,filter)
+rm(activitylabel, features, filter)
 
 ##reformat variable names
 names(full)[2:19] <- names(full)[2:19] %>%
@@ -55,16 +55,9 @@ names(full)[2:19] <- names(full)[2:19] %>%
         str_replace("(.*)-(mean)", "\\2\\1") %>%
         str_replace("(.*)-(std)", "\\2\\1")
 
-##create a list of column names as a string for the summarize function
-snames <- list()
-for (name in names(full)[2:19]) {
-        snames <- c(snames, paste0(name, "=mean(", name, ")"))
-}
-snames <- toString(snames)
-
+##Summarise Full
 tbl_df(full)
-means <-
-        eval(parse(
-                text = paste("summarize(group_by(full, subject,activity),", snames, ")")
-        ))
-rm(name, snames)
+means <- group_by(full, subject, activity) %>%
+        summarise_all(mean)
+
+
